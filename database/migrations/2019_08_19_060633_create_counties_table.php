@@ -16,11 +16,11 @@ class CreateCountiesTable extends Migration
         Schema::create('counties', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->string('county_code', 3);
+            $table->string('county_code', 8)->unique()->nullable();
             $table->string('county_name');
 
-            $table->unsignedInteger('country_id');
-            $table->unsignedInteger('state_id');
+            $table->unsignedInteger('country_id')->index();
+            $table->unsignedInteger('state_id')->index();
             $table->timestamps();
 
             $table->foreign('country_id')->references('id')->on('countries');

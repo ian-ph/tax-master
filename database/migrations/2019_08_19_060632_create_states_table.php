@@ -16,10 +16,10 @@ class CreateStatesTable extends Migration
         Schema::create('states', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->string('state_code', 3);
+            $table->string('state_code', 8)->unique();
             $table->string('state_name');
 
-            $table->unsignedInteger('country_id');
+            $table->unsignedInteger('country_id')->index();
             $table->timestamps();
 
             $table->foreign('country_id')->references('id')->on('countries');

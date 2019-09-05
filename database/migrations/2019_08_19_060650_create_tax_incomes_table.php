@@ -15,20 +15,19 @@ class CreateTaxIncomesTable extends Migration
     {
         Schema::create('tax_incomes', function (Blueprint $table) {
             $table->bigIncrements('id');
-
-            $table->double('amount');
+            $table->uuid('uuid');
 
             //unnormalized to optimize query performace when this table becomes huge
             $table->unsignedInteger('country_id')->index();
             $table->unsignedInteger('state_id')->index();
             $table->unsignedInteger('county_id')->index();
 
-            //longer timespan of data can have different rates
-            $table->unsignedInteger('taxt_rate_id')->index();
-
+            $table->decimal('amount', 17, 2);
+            $table->decimal('taxed_amount', 17, 2);
+            $table->date('filing_date');
+            $table->unsignedInteger('tax_category');
             $table->timestamps();
 
-            $table->foreign('taxt_rate_id')->references('id')->on('tax_rates');
             $table->foreign('country_id')->references('id')->on('countries');
             $table->foreign('state_id')->references('id')->on('states');
             $table->foreign('county_id')->references('id')->on('counties');

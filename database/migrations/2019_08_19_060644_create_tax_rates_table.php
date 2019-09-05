@@ -17,17 +17,20 @@ class CreateTaxRatesTable extends Migration
             $table->increments('id');
             $table->uuid('uuid');
 
-            /**
-             * note that depending on the country, income tax can be country wide, state wide or county wide.
-             * Some country does not have state at all, and some does not have county.
-             * Logically we can use tax rates depending on the data in this table.
-             */
+            // Un-normalized for faster queries
             $table->unsignedInteger('country_id')->nullable()->index();
             $table->unsignedInteger('state_id')->nullable()->index();
             $table->unsignedInteger('county_id')->nullable()->index();
 
-            $table->double(6, 4);
-            $table->text('note');
+            $table->decimal('bracket_minimum', 17, 2)->nullable();
+            $table->decimal('bracket_maximum', 17, 2)->nullable();
+            $table->decimal('rate_percentage', 6, 4)->default(0);
+            $table->decimal('rate_fixed', 17, 2)->default(0);
+            $table->unsignedTinyInteger('tax_type')->default(1);
+            $table->unsignedTinyInteger('tax_category')->default(1);
+            $table->text('note')->nullable();
+
+            $table->date('implementation_date');
             $table->timestamps();
 
             $table->foreign('country_id')->references('id')->on('countries');

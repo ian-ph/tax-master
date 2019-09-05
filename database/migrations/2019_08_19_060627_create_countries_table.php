@@ -16,8 +16,10 @@ class CreateCountriesTable extends Migration
         Schema::create('countries', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->string('country_code', 3);
+            $table->string('country_code', 3)->unique();
+            $table->string('currency_code', 3);
             $table->string('country_name');
+            $table->unsignedTinyInteger('computation_type')->default(1);
             $table->timestamps();
         });
     }
