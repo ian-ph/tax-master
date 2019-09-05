@@ -29,24 +29,193 @@ $(function(){
     });
 
     $('select.toggle_state').change(function(){
-        formHelper.toggleState($(this).val());
+        formHelper.toggleState($(this).val(), function(){
+            taxSummary.summarizeTaxLocation();
+            taxSummary.summarizeTaxRate();
+            taxSummary.summarizeTaxBracket();
+        });
+    });
+
+    $('select.toggle_county').change(function(){
+        formHelper.toggleCounty($(this).val(), function(){
+            taxSummary.summarizeTaxLocation();
+        });
+    });
+
+    $('select[name=county_code]').change(function(){
+        taxSummary.summarizeTaxLocation();
     });
 
     if($('select.toggle_state').length && $('select.toggle_state').val() != ""){
-        formHelper.toggleState($('select.toggle_state').val());
+        //formHelper.toggleState($('select.toggle_state').val());
     }
+
+    if($('select.toggle_county').length && $('select.toggle_county').val() != ""){
+        //formHelper.toggleCounty($('select.toggle_county').val());
+    }
+
+    $('.trigger-summarize-tax-value').on('input', function() {
+        taxSummary.summarizeTaxRate();
+    });
+
+    $('.trigger-summarize-tax-bracket').on('input', function() {
+        taxSummary.summarizeTaxBracket();
+    });
+
+    $('input[name=implementation_date]').change('input', function() {
+        $('.tax-date-text').text($(this).val());
+    });
+
+    $('input[name=note]').on('input', function() {
+        $('.tax-note-value').text($(this).val());
+    });
+
+    $('select[name=tax_type]').change(function(){
+        $('.tax-rate .tax-rate-type').text($('option:selected', this).text());
+    });
+
+    $('.tax-rate .tax-rate-type').text($('option:selected', 'select[name=tax_type]').text());
+
+    $('.dashboard-country-chooser select').change(function(){
+        $('.dashboard-country-chooser form').submit();
+    });
 });
+
+window.taxSummary = {
+    country : $('select[name=country_code]'),
+    state : $('select[name=state_code]'),
+    county : $('select[name=county_code]'),
+    rateFixed : $('input[name=rate_fixed]'),
+    ratePercentage : $('input[name=rate_percentage]'),
+    bracketMinimum : $('input[name=bracket_minimum]'),
+    bracketMaximum : $('input[name=bracket_maximum]'),
+
+    valueText : $('.tax-location .value-text'),
+    countryText : $('.tax-location .country-text'),
+    stateText : $('.tax-location .state-text'),
+    taxRateText : $('.tax-rate .tax-rate-value'),
+    taxBracketText : $('.tax-bracket .tax-bracket-value'),
+
+    summarizeTaxLocation: function() {
+        //none mode
+        if((this.county.val() == undefined || this.county.val() == '') && (this.state.val() == undefined || this.state.val() == '') && (this.country.val() == undefined || this.country.val() == '')){
+            this.valueText.text('Not set');
+            this.countryText.hide();
+            this.stateText.hide();
+            return;
+        }
+
+        //country only tax
+        if((this.county.val() == undefined || this.county.val() == '') && (this.state.val() == undefined || this.state.val() == '')){
+            this.valueText.text('Country of ' + $('option:selected', this.country).text())
+            this.countryText.hide();
+            this.stateText.hide();
+            return;
+        }
+
+        //state only tax
+        if((this.county.val() == undefined || this.county.val() == '')){
+            this.valueText.text('State of ' +  $('option:selected', this.state).text())
+            this.countryText.show().text('Country of ' + $('option:selected', this.country).text());
+            this.stateText.hide();
+            return;
+        }
+
+        this.valueText.text('State of ' +  $('option:selected', this.county).text())
+        this.countryText.show().text('Country of ' + $('option:selected', this.country).text());
+        this.stateText.show().text('State of ' + $('option:selected', this.state).text());
+        return;
+    },
+
+    summarizeTaxRate: function(){
+        var taxRateText = this.taxRateText;
+
+        $.ajax({
+            url : '/api/tax-rate/rate-preview',
+            headers: {
+                "Authorization": "Bearer " + $('meta[name=request-token]').attr('content')
+            },
+            dataType: 'json',
+            data : {
+                country_code : this.country.val(),
+                rate_fixed : this.rateFixed.val(),
+                rate_percentage : this.ratePercentage.val()
+            },
+            type: 'post',
+            beforeSend: function(){
+                $('.tax-amount-form .invalid-feedback').remove();
+                $('.tax-amount-form .is-invalid').removeClass('is-invalid');
+                taxRateText.text('Not Set');
+            },
+            success: function(result){
+                //alert(this.taxRateText.length);
+                taxRateText.text(result.result);
+                //this.taxRateText.hide();
+            },
+            error : function(result){
+                $.each(result.responseJSON.errors, function(k, v){
+                    $('.tax-amount-form input[name="'+k+'"]').addClass('is-invalid').parent().append('<div class="invalid-feedback">'+v[0]+'</div>');
+                });
+            }
+        });
+    },
+
+    summarizeTaxBracket: function(){
+        var taxBracketText = this.taxBracketText;
+
+        $.ajax({
+            url : '/api/tax-rate/bracket-preview',
+            headers: {
+                "Authorization": "Bearer " + $('meta[name=request-token]').attr('content')
+            },
+            dataType: 'json',
+            data : {
+                country_code : this.country.val(),
+                bracket_minimum : this.bracketMinimum.val(),
+                bracket_maximum : this.bracketMaximum.val()
+            },
+            type: 'post',
+            beforeSend: function(){
+                $('.tax-bracket-form .invalid-feedback').remove();
+                $('.tax-bracket-form .is-invalid').removeClass('is-invalid');
+                taxBracketText.text('Not Set');
+            },
+            success: function(result){
+                //alert(this.taxRateText.length);
+                taxBracketText.text(result.result);
+                //this.taxRateText.hide();
+            },
+            error : function(result){
+                $.each(result.responseJSON.errors, function(k, v){
+                    $('.tax-bracket-form input[name="'+k+'"]').addClass('is-invalid').parent().append('<div class="invalid-feedback">'+v[0]+'</div>');
+                });
+            }
+        });
+    }
+}
 
 window.formHelper = {
 
     tableData       : $('.table-data'),
     tableFooter     : $('.table-footer'),
 
-    toggleState: function(country_code){
+    toggleState: function(country_code, callback){
+
         var select = $('select.dynamic_state');
+        var countySelect = $('select.dynamic_county');
 
         select.find('option').remove();
         select.append('<option value="">Choose a state</option>');
+
+        countySelect.find('option').remove();
+        countySelect.append('<option value="">Choose a county</option>');
+
+        if(country_code == undefined || country_code == ''){
+            if( typeof callback == "function" ){
+                callback();
+            }
+            return;
+        }
 
         var select_value = select.data('value') != undefined && select.data('value') != "" ? select.data('value') : '';
 
@@ -57,11 +226,49 @@ window.formHelper = {
             },
             type: 'get',
             success: function(result){
-                console.log(select_value);
+
                 $.each(result, function(){
                     selected = select_value == this.state_code ? 'selected' : '';
                     select.append('<option value="'+ this.state_code +'" '+selected+'>'+ this.state_name +'</option>');
                 });
+
+                if( typeof callback == "function" ){
+                    callback();
+                }
+            }
+        });
+    },
+
+    toggleCounty: function(state_code, callback){
+        var select = $('select.dynamic_county');
+
+        select.find('option').remove();
+        select.append('<option value="">Choose a county</option>');
+
+        if(state_code == undefined || state_code == ''){
+            if( typeof callback == "function" ){
+                callback();
+            }
+            return;
+        }
+
+        var select_value = select.data('value') != undefined && select.data('value') != "" ? select.data('value') : '';
+
+        $.ajax({
+            url : '/api/county/list_by_state_code/' + state_code,
+            headers: {
+                "Authorization": "Bearer " + $('meta[name=request-token]').attr('content')
+            },
+            type: 'get',
+            success: function(result){
+                $.each(result, function(){
+                    selected = select_value == this.county_code ? 'selected' : '';
+                    select.append('<option value="'+ this.county_code +'" '+selected+'>'+ this.county_name +'</option>');
+                });
+
+                if( typeof callback == "function" ){
+                    callback();
+                }
             }
         });
     },
