@@ -154,4 +154,12 @@ class CountyController extends Controller
             'success' => true
         ];
     }
+
+    public function listByStateCode($state_code)
+    {
+        $state = State::where('state_code', $state_code)->first();
+        $counties = County::select(['county_code', 'county_name'])->where('state_id', $state->id)->orderBy('county_name', 'asc')->get();
+
+        return $counties;
+    }
 }

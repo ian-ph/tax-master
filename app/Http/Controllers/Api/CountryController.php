@@ -31,8 +31,10 @@ class CountryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'country_name'   => 'required|max:255',
-            'country_code'  => 'required|min:2|max:2|unique:countries',
+            'country_name'      => 'required|max:255',
+            'country_code'      => 'required|min:3|max:3|unique:countries',
+            'currency_code'     => 'required|min:3|max:3',
+            'computation_type'  => 'required|in:1,2'
         ]);
 
         if ($validator->fails()) {
@@ -64,8 +66,10 @@ class CountryController extends Controller
     public function update(Request $request, $uuid)
     {
         $validator = Validator::make($request->all(), [
-            'country_name'   => 'required|max:255',
-            'country_code'  => 'required|min:2|max:2',
+            'country_name'      => 'required|max:255',
+            'country_code'      => 'required|min:3|max:3',
+            'currency_code'     => 'required|min:3|max:3',
+            'computation_type'  => 'required|in:1,2'
         ]);
 
         if ($validator->fails()) {

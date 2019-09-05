@@ -134,7 +134,15 @@ class StateController extends Controller
     public function listByCountryCode($country_code)
     {
         $country = Country::where('country_code', $country_code)->first();
-        $states = State::select(['state_code', 'state_name'])->where('country_id', $country->id)->get();
+        $states = State::select(['state_code', 'state_name'])->where('country_id', $country->id)->orderBy('state_name', 'asc')->get();
+
+        return $states;
+    }
+
+    public function listByUuid($country_uuid)
+    {
+        $country = Country::where('uuid', $country_uuid)->first();
+        $states = State::select(['uuid', 'state_name'])->where('country_id', $country->id)->orderBy('state_name', 'asc')->get();
 
         return $states;
     }
