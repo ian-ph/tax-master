@@ -16,9 +16,9 @@ class CountyCollection extends Resource
     {
         return [
             'uuid' => $this->uuid,
-            'country_code' => $this->county_code,
-            'country_name' => $this->county_name,
-            'country' => $this->country->country_name,
+            'county_code' => $this->county_code,
+            'county_name' => $this->county_name,
+            'county' => $this->country->country_name,
             'state' => $this->state->state_name
         ];
     }
