@@ -16,9 +16,9 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/countries', 'CountryController@index')->name('country.index');
+Route::get('/dashboard/{uuid?}', 'HomeController@dashboard')->name('home.dashboard');
+Route::get('/stats/states/{uuid}', 'HomeController@states')->name('home.states');
 
 Route::prefix('country')->name('country.')->group(function () {
     Route::get('/', 'CountryController@index')->name('index');
@@ -39,4 +39,11 @@ Route::prefix('county')->name('county.')->group(function () {
     Route::get('/add', 'CountyController@add')->name('add');
     Route::get('/edit/{uuid}', 'CountyController@edit')->name('edit');
     Route::get('/delete/{uuid}', 'CountyController@delete')->name('delete');
+});
+
+Route::prefix('rates')->name('rates.')->group(function () {
+    Route::get('/', 'TaxRateController@index')->name('index');
+    Route::get('/add', 'TaxRateController@add')->name('add');
+    Route::get('/edit/{uuid}', 'TaxRateController@edit')->name('edit');
+    Route::get('/delete/{uuid}', 'TaxRateController@delete')->name('delete');
 });
