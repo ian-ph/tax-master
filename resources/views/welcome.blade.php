@@ -4,96 +4,30 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Tax Statistics</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 200;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 13px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
+        <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
+        <div class="container">
+            <div class="p-5 text-center">
+                <h1>Tax Statistics</h1>
 
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
+                 <p class="lead mb-5">This is a development test, and a per requirement, this will display the statistics of tax income and tax rate per country, state and counties. The only difference is that the application can handle as many countries/states/counties as needed.</p>
 
-                <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
+                <p class="lead mb-5">Since the application is designed to handle multiple countries, it can also handle all (or most) kinds of tax computations that would be specific to a country (fixed rate, percentage rate, fixed+percentage rate, nomal bracketing, chuncked bracketing, etc), which is greatly considered when deremining the average tax rating. </p>
+
+                <p class="lead mb-5">The database is seeded with 1,000,000 tax records and the server is configured using the lowest resources.</p>
+
+                <p class="lead mb-5">Please check my email for the login information.</p>
+
+                <a href="{{ route('home.dashboard') }}" class="btn btn-lg btn-success">Go To Dashboard</a>
             </div>
+
+
         </div>
+
     </body>
 </html>

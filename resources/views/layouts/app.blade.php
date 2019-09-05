@@ -11,12 +11,13 @@
         <meta name="request-token" content="{{ Auth::user()->api_token }}">
     @endauth
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Tax Statistics</title>
 
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
@@ -26,7 +27,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    Tax Statistics
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -48,10 +49,7 @@
                             @endif
                         @else
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Tax Income Reports</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Tax Rate Reports</a>
+                                <a class="nav-link" href="{{ route('home.dashboard') }}">Dashboard</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -63,7 +61,7 @@
                                     <a class="dropdown-item" href="{{ route('state.index') }}">Manage States</a>
                                     <a class="dropdown-item" href="{{ route('county.index') }}">Manage Counties</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Manage Tax Rates</a>
+                                    <a class="dropdown-item" href="{{ route('rates.index') }}">Manage Tax Rates</a>
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
