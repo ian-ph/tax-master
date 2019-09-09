@@ -31,12 +31,12 @@
                 <hr>
                 <div class="row">
                     <div class="col-6">
-                        <small class="text-uppercase">Income from single</small>
-                        {{ LocaleHelper::currency($countryTaxes->where('tax_category', 1)->first()->total_tax) }}
+                        <small class="text-uppercase">Income from <br>single</small>
+                        {{ $countryTaxes->where('tax_category', 1)->count() ? LocaleHelper::currency($countryTaxes->where('tax_category', 1)->first()->total_tax) : 'none' }}
                     </div>
                     <div class="col-6">
-                        <small class="text-uppercase">Income from married</small>
-                        {{ LocaleHelper::currency($countryTaxes->where('tax_category', 2)->first()->total_tax) }}
+                        <small class="text-uppercase">Income from<br>married</small>
+                        {{ $countryTaxes->where('tax_category', 2)->count() ? LocaleHelper::currency($countryTaxes->where('tax_category', 2)->first()->total_tax) : 'none' }}
                     </div>
                 </div>
             </div>

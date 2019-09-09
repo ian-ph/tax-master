@@ -17,16 +17,16 @@
         <div class="card mb-3 bg-info text-white">
             <div class="card-body">
                 <h5 class="text-uppercase">Total Tax Income</h5>
-                <p class="h3">{{ $stateTax->total_tax }}</p>
+                <p class="h3">{{ LocaleHelper::currency($stateTaxes->sum('total_tax')) }}</p>
                 <hr>
                 <div class="row">
                     <div class="col-6">
-                        <small class="text-uppercase">Income from single</small>
-                        {{ $stateTaxByType->where('tax_category', 1)->count() ? $stateTaxByType->where('tax_category', 1)->first()->total_tax : 'none'}}
+                        <small class="text-uppercase">Income from <br>single</small>
+                        {{ $stateTaxes->where('tax_category', 1)->count() ? LocaleHelper::currency($stateTaxes->where('tax_category', 1)->first()->total_tax) : 'none'}}
                     </div>
                     <div class="col-6">
-                        <small class="text-uppercase">Income from married</small>
-                        {{ $stateTaxByType->where('tax_category', 2)->count() ?  $stateTaxByType->where('tax_category', 2)->first()->total_tax :'none'}}
+                        <small class="text-uppercase">Income from <br>  married</small>
+                        {{ $stateTaxes->where('tax_category', 2)->count() ? LocaleHelper::currency($stateTaxes->where('tax_category', 2)->first()->total_tax) :'none'}}
                     </div>
                 </div>
             </div>
@@ -69,8 +69,8 @@
                         <tr>
                             <td>{{ $countyTaxIncome->county_name }}</td>
                             <td class="text-right">{{ $countyTaxIncome->average_tax_rate }}%</td>
-                            <td class="text-right">{{ $countyTaxIncome->average_tax }}</td>
-                            <td class="text-right">{{ $countyTaxIncome->total_tax }}</td>
+                            <td class="text-right">{{ LocaleHelper::currency($countyTaxIncome->average_tax) }}</td>
+                            <td class="text-right">{{ LocaleHelper::currency($countyTaxIncome->total_tax) }}</td>
                         </tr>
                         @endforeach
                     </tbody>
