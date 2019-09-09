@@ -9,12 +9,46 @@ use App\Country;
 use Validator;
 use Str;
 
+/**
+ * @group Country management
+ *
+ * API's for managing the country records
+ */
 class CountryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the countries table from the database.
      *
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @queryParam page int Used for pagination, indicates the current page of the list of record. Example: 1
+     *
+     * @response {
+     *      "data": [
+     *          {
+     *              "uuid": "7b7009a8-cf1b-4466-84a1-8051b34a58b2",
+     *              "country_code": "USA",
+     *              "country_name": "United States",
+     *              "currency_code": "USD",
+     *              "computation_type": 1
+     *          }
+     *      ],
+     *      "links": {
+     *         "first":"\/country?page=1",
+     *         "last":"\/country?page=324",
+     *         "prev":"\/country?page=1",
+     *         "next":"\/country?page=3"
+     *      },
+     *      "meta": {
+     *          "current_page":2,
+     *          "from":11,
+     *          "last_page":324,
+     *          "path":"\/country",
+     *          "per_page":10,
+     *          "to":20,
+     *          "total":3232
+     *      }
+     * }
      */
     public function index()
     {
@@ -23,10 +57,27 @@ class CountryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created country in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam country_name string required The name of the country. Example: United States
+     * @bodyParam country_code string The country's iso 3 code. Example: USA
+     * @bodyParam currency_code string The country's iso 3 currency code. Example: USD
+     * @bodyParam computation_type int required The type of tax computation the country is using. Example: 1
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_name": [ "Country name is required" ]
+     *         }
+     *     ]
+     * }
      */
     public function store(Request $request)
     {
@@ -57,11 +108,30 @@ class CountryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified country in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @queryParam uuid string The uuid of the country to be updated. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
+     *
+     * @bodyParam country_name string required The name of the country. Example: United States
+     * @bodyParam country_code string The country's iso 3 code. Example: USA
+     * @bodyParam currency_code string The country's iso 3 currency code. Example: USD
+     * @bodyParam computation_type int required The type of tax computation the country is using. Example: 1
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_name": [ "Country name is required" ]
+     *         }
+     *     ],
+     *     "message": "Request validation failed"
+     * }
      */
     public function update(Request $request, $uuid)
     {
@@ -98,10 +168,21 @@ class CountryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deletes a country in the storage
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam uuid string required The uuid of the country to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" : "Country does not exists"
+     *     "message" : "Request validation failed"
+     * }
      */
     public function destroy($uuid)
     {

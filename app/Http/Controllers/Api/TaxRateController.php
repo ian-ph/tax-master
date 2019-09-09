@@ -13,12 +13,49 @@ use Propaganistas\LaravelIntl\Facades\Currency as Currency;
 use Propaganistas\LaravelIntl\Facades\Number as Number;
 use Str;
 
+/**
+ * @group Tax Rates management
+ *
+ * API's for managing the tax rates records
+ */
 class TaxRateController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the tax_rates table from the database.
      *
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam country string The uuid of the country of the tax rate, to be used a filtering of the listing.
+     * @bodyParam state string The uuid of the state of the tax rate, to be used a filtering of the listing.
+     *
+     * @response {
+     *      "data": [
+     *          {
+     *              "uuid": "7b7009a8-cf1b-4466-84a1-8051b34a58b2",
+     *              "country": "United States",
+     *              "state": "Las Vegas",
+     *              "county": "N/A",
+     *              "income_bracket": "$0 - $1,500",
+     *              "rate": "2%",
+     *              "note": "Example note"
+     *          }
+     *      ],
+     *      "links": {
+     *         "first":"\/tax-rate?page=1",
+     *         "last":"\/tax-rate?page=324",
+     *         "prev":"\/tax-rate?page=1",
+     *         "next":"\/tax-rate?page=3"
+     *      },
+     *      "meta": {
+     *          "current_page":2,
+     *          "from":11,
+     *          "last_page":324,
+     *          "path":"\/tax-rate",
+     *          "per_page":10,
+     *          "to":20,
+     *          "total":3232
+     *      }
+     * }
      */
     public function index(Request $request)
     {
@@ -52,21 +89,35 @@ class TaxRateController extends Controller
         return  TaxRateCollection::collection($rates);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created tax rate in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam country_code string required The country code for this tax rate. Example: USA
+     * @bodyParam state_code string The state code of this tax rate. Example: LSV
+     * @bodyParam county_code string The county code of this tax rate. Example: NVD
+     * @bodyParam implementation_date string required The date on which this tax rate will become effective.
+     * @bodyParam rate_percentage float The rate is percentage. Example: 15.5
+     * @bodyParam rate_fixed float The rate in fixed amount. Example: 250.50
+     * @bodyParam bracket_minimum float required The minimum bracket for this tax rate.
+     * @bodyParam bracket_maximum The maximum bracket for this tax rate
+     * @bodyParam tax_type int required The type of this tax, indicated 1 if single, 2 for joint.
+     * @bodyParam note string required Descriptive note for this tax rate
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_code": [ "country code is required" ]
+     *         }
+     *     ]
+     * }
      */
     public function store(Request $request)
     {
@@ -111,33 +162,35 @@ class TaxRateController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Store a newly created tax rate in storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * @authenticated
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * @queryParam uuid string The uuid of the tax rate to be updated. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @bodyParam country_code string required The country code for this tax rate. Example: USA
+     * @bodyParam state_code string The state code of this tax rate. Example: LSV
+     * @bodyParam county_code string The county code of this tax rate. Example: NVD
+     * @bodyParam implementation_date string required The date on which this tax rate will become effective.
+     * @bodyParam rate_percentage float The rate is percentage. Example: 15.5
+     * @bodyParam rate_fixed float The rate in fixed amount. Example: 250.50
+     * @bodyParam bracket_minimum float required The minimum bracket for this tax rate.
+     * @bodyParam bracket_maximum The maximum bracket for this tax rate
+     * @bodyParam tax_type int required The type of this tax, indicated 1 if single, 2 for joint.
+     * @bodyParam note string required Descriptive note for this tax rate
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_code": [ "country code is required" ]
+     *         }
+     *     ]
+     * }
      */
     public function update(Request $request, $id)
     {
@@ -145,16 +198,49 @@ class TaxRateController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deletes a tax_rate in the storage
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam uuid string required The uuid of the tax_rate to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" : "Tax rate does not exists"
+     *     "message" : "Request validation failed"
+     * }
      */
     public function destroy($id)
     {
         //
     }
 
+    /**
+     * Generate a easily readable preview of the tax rate
+     *
+     * @authenticated
+     *
+     * @bodyParam country_code string required The country code and will be used as the reference for the currency
+     * @bodyParam rate_percentage float The tax rate in percentage
+     * @bodyParam rate_fixed float The tax rate in fixed amount
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_code": [ "country code is required" ]
+     *         }
+     *     ]
+     * }
+     */
     public function ratePreview(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -192,6 +278,28 @@ class TaxRateController extends Controller
         ];
     }
 
+    /**
+     * Generate a easily readable preview of the tax rate
+     *
+     * @authenticated
+     *
+     * @bodyParam country_code string required The country code and will be used as the reference for the currency
+     * @bodyParam bracket_minimum float The minimum bracket of the tax rate
+     * @bodyParam bracket_maximum float The maximum bracket of the tax rate
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_code": [ "country code is required" ]
+     *         }
+     *     ]
+     * }
+     */
     public function bracketPreview(Request $request)
     {
         $validator = Validator::make($request->all(), [

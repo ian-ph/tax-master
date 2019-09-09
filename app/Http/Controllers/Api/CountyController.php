@@ -11,12 +11,44 @@ use App\State;
 use Str;
 use Validator;
 
+/**
+ * @group County management
+ *
+ * API's for managing the country records
+ */
 class CountyController extends Controller
 {
-/**
-     * Display a listing of the resource.
+    /**
+     * Display a listing of the counties table from the database.
      *
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @queryParam page int Used for pagination, indicates the current page of the list of record. Example: 1
+     *
+     * @response {
+     *      "data": [
+     *          {
+     *              "uuid": "7b7009a8-cf1b-4466-84a1-8051b34a58b2",
+     *              "county_name": "Nevada",
+     *              "couny_code": "USNVD",
+     *          }
+     *      ],
+     *      "links": {
+     *         "first":"\/county?page=1",
+     *         "last":"\/county?page=324",
+     *         "prev":"\/county?page=1",
+     *         "next":"\/county?page=3"
+     *      },
+     *      "meta": {
+     *          "current_page":2,
+     *          "from":11,
+     *          "last_page":324,
+     *          "path":"\/county",
+     *          "per_page":10,
+     *          "to":20,
+     *          "total":3232
+     *      }
+     * }
      */
     public function index()
     {
@@ -25,10 +57,27 @@ class CountyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created county in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam county_name string required The name of the county. Example: Nevada
+     * @bodyParam county_code string The county's unique code. Example: LSVD
+     * @bodyParam country_code string The county's parent country iso 3 code. Example: USA
+     * @bodyParam state_code string required The county's parent state iso code. Example: LASVEGAS
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "county_name": [ "County name is required" ]
+     *         }
+     *     ]
+     * }
      */
     public function store(Request $request)
     {
@@ -79,11 +128,29 @@ class CountyController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update an existing created county in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @queryParam uuid string The uuid of the county to be updated. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
+     *
+     * @bodyParam county_name string required The name of the county. Example: Nevada
+     * @bodyParam county_code string The county's unique code. Example: LSVD
+     * @bodyParam country_code string The county's parent country iso 3 code. Example: USA
+     * @bodyParam state_code string required The county's parent state iso code. Example: LASVEGAS
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" [
+     *         {
+     *             "country_name": [ "Country name is required" ]
+     *         }
+     *     ]
+     * }
      */
     public function update(Request $request, $uuid)
     {
@@ -133,10 +200,21 @@ class CountyController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deletes a country in the storage
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @authenticated
+     *
+     * @bodyParam uuid string required The uuid of the county to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
+     *
+     * @response 402 {
+     *     "success" : true
+     * }
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" : "County does not exists"
+     *     "message" : "Request validation failed"
+     * }
      */
     public function destroy($uuid)
     {
@@ -155,9 +233,38 @@ class CountyController extends Controller
         ];
     }
 
+    /**
+     * List all the counties using a state code as parameter
+     *
+     * @authenticated
+     *
+     * @bodyParam state_code string required The state code of the county's parent state. Example: LVND
+     *
+     * @response 402 [
+     *     {
+     *         "county_code": "NVD",
+     *         "county_name": "Nevada"
+     *     }
+     * ]
+     *
+     * @response 422 {
+     *     "success" : false,
+     *     "errors" : "State does not exists"
+     *     "message" : "Request validation failed"
+     * }
+     */
     public function listByStateCode($state_code)
     {
         $state = State::where('state_code', $state_code)->first();
+
+        if(empty($state)) {
+            return response()->json([
+                'message' => 'Request validation failed',
+                'errors' => 'State does not exists.',
+                'success' => false
+            ], 422);
+        }
+
         $counties = County::select(['county_code', 'county_name'])->where('state_id', $state->id)->orderBy('county_name', 'asc')->get();
 
         return $counties;
