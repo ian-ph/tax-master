@@ -189,7 +189,7 @@ class TaxIncome extends Model
     }
 
     private function generateTaxIncomeQuery($primaryGroup, $groupByTaxCategory = false) {
-        $select = 'sum(taxed_amount) as total_tax, avg(taxed_amount) as average_tax, ' . $primaryGroup;
+        $select = 'sum(taxed_amount) as total_tax, avg(taxed_amount) as average_tax, tax_incomes.' . $primaryGroup;
         $select .= $groupByTaxCategory ? ', tax_category' : '';
 
         $query = $this->with('country')
