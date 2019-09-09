@@ -27,16 +27,16 @@
         <div class="card mb-3 bg-success text-white">
             <div class="card-body">
                 <h5 class="text-uppercase">Total Tax Income</h5>
-                <p class="h3">{{ $countryTax->total_tax }}</p>
+                <p class="h3">{{ LocaleHelper::currency($countryTaxes->sum('total_tax')) }}</p>
                 <hr>
                 <div class="row">
                     <div class="col-6">
                         <small class="text-uppercase">Income from single</small>
-                        {{ $countryTaxByType->where('tax_category', 1)->first()->total_tax }}
+                        {{ LocaleHelper::currency($countryTaxes->where('tax_category', 1)->first()->total_tax) }}
                     </div>
                     <div class="col-6">
                         <small class="text-uppercase">Income from married</small>
-                        {{ $countryTaxByType->where('tax_category', 2)->first()->total_tax }}
+                        {{ LocaleHelper::currency($countryTaxes->where('tax_category', 2)->first()->total_tax) }}
                     </div>
                 </div>
             </div>
@@ -83,9 +83,9 @@
                             <tbody>
                                 @foreach($stateTaxes as $stateTax)
                                 <tr>
-                                    <td>{{ $stateTax->state_name }}</td>
-                                    <td class="text-right">{{ $stateTax->average_tax }}</td>
-                                    <td class="text-right">{{ $stateTax->total_tax }}</td>
+                                    <td>{{ $stateTax->state->state_name }}</td>
+                                    <td class="text-right">{{ LocaleHelper::currency($stateTax->average_tax) }}</td>
+                                    <td class="text-right">{{ LocaleHelper::currency($stateTax->total_tax) }}</td>
                                     <td class="text-right"><a href="{{ route('home.states', ['uuid' => $stateTax->uuid]) }}" class="">More Info</a></td>
                                 </tr>
                                 @endforeach
