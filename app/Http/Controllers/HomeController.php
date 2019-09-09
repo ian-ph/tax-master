@@ -23,6 +23,10 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * A proxy to simple redirect an empty route to the dashboard
+     * @return [type] [description]
+     */
     public function index()
     {
         return redirect(route('home.dashboard'));
@@ -104,6 +108,13 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * Show the states statistics page
+     *
+     * @param string $uuid The uuid of the states's statistics to be displayed
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function states(Request $request, $uuid)
     {
         $state = State::with('country')->where('uuid', $uuid)->first();

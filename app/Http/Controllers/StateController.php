@@ -8,6 +8,10 @@ use App\State;
 
 class StateController extends Controller
 {
+    /**
+     * Display a view that displays a list of states
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $states = State::paginate('3');
@@ -16,6 +20,10 @@ class StateController extends Controller
         ]);
     }
 
+    /**
+     * Display a view that displays a create form
+     * @return \Illuminate\Http\Response
+     */
     public function add()
     {
         $countries = Country::all();
@@ -24,6 +32,13 @@ class StateController extends Controller
         ]);
     }
 
+    /**
+     * Display a view that displays a update form
+     *
+     * @param string $uuid The uuid of the record to be edited
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function edit($uuid)
     {
         $state = State::where('uuid', $uuid)->with('country')->first();
@@ -38,6 +53,13 @@ class StateController extends Controller
         ]);
     }
 
+    /**
+     * Deletes a state in the database
+     *
+     * @param string $uuid The uuid of the record to be deleted
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete($uuid)
     {
         $state = State::where('uuid', $uuid)->first();

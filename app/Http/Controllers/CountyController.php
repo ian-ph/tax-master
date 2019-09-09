@@ -9,11 +9,19 @@ use App\State;
 
 class CountyController extends Controller
 {
+    /**
+     * Display a view that displays a list of counties
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         return view('county.index');
     }
 
+    /**
+     * Display a view that displays a create form
+     * @return \Illuminate\Http\Response
+     */
     public function add()
     {
         $countries = Country::all();
@@ -22,6 +30,13 @@ class CountyController extends Controller
         ]);
     }
 
+    /**
+     * Display a view that displays a update form
+     *
+     * @param string $uuid The uuid of the record to be edited
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function edit($uuid)
     {
         $county = County::where('uuid', $uuid)->with('country')->first();
@@ -37,6 +52,13 @@ class CountyController extends Controller
         ]);
     }
 
+    /**
+     * Deletes a county in the database
+     *
+     * @param string $uuid The uuid of the record to be deleted
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete($uuid)
     {
         $county = County::where('uuid', $uuid)->first();
