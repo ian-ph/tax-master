@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\TaxRate;
 use App\TaxIncomeDetail;
+use DB;
 use Propaganistas\LaravelIntl\Facades\Currency as Currency;
 use Cache;
 
@@ -160,16 +161,6 @@ class TaxIncome extends Model
         return $this->belongsTo('App\County');
     }
 
-    public function getTotalTaxAttribute($value)
-    {
-        return Currency::format($value, $this->getCurrencyCode());
-    }
-
-    public function getAverageTaxAttribute($value)
-    {
-        return Currency::format($value, $this->getCurrencyCode());
-    }
-
     public function getAverageTaxRateAttribute($value)
     {
         return number_format($value, 2);
@@ -178,6 +169,40 @@ class TaxIncome extends Model
     public function getCountryAverageTaxRate()
     {
         return  number_format($this->average_country_tax  / ($this->average_raw_income / 100), 2) . ' %';
+    }
+
+
+    public function summaryByCountry($groupByTaxCategory = false)
+    {
+
+        return $this->generateTaxIncomeQuery('country_id', $groupByTaxCategory);
+    }
+
+    public function summaryByState($groupByTaxCategory = false)
+    {
+        return $this->generateTaxIncomeQuery('state_id', $groupByTaxCategory);
+    }
+
+    public function summaryByCounty($groupByTaxCategory = false)
+    {
+        return $this->generateTaxIncomeQuery('county_id', $groupByTaxCategory);
+    }
+
+    private function generateTaxIncomeQuery($primaryGroup, $groupByTaxCategory = false) {
+        $select = 'sum(taxed_amount) as total_tax, avg(taxed_amount) as average_tax, ' . $primaryGroup;
+        $select .= $groupByTaxCategory ? ', tax_category' : '';
+
+        $query = $this->with('country')
+            ->with('state')
+            ->with('county')
+            ->select(DB::raw($select))
+            ->groupBy($primaryGroup);
+
+        if($groupByTaxCategory) {
+            $query->groupBy('tax_category');
+        }
+
+        return $query;
     }
 
     private function getCurrencyCode()
@@ -195,4 +220,5 @@ class TaxIncome extends Model
             return $country->currency_code;
         });
     }
+
 }

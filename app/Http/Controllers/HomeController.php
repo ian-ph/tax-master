@@ -31,36 +31,32 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @param string $uuid The uuid of the country's statistics to be displayed
+     *
+     * @return \Illuminate\Http\Response
      */
     public function dashboard(Request $request, $uuid = '')
     {
         $countries = Country::all();
+        $taxIncome = new TaxIncome;
 
         if (empty($request->uuid)) {
             return view('home.dashboard', [
-                'empty_page'        => true,
-                'countries'         => $countries,
+                'empty_page'    => true,
+                'countries'     => $countries,
             ]);
         }
 
         $country = $countries->where('uuid', $request->uuid)->first();
-        $taxRate = new TaxRate;
+        $request->session()->put('current.country.currency', $country->currency_code);
 
-        $countryTax = TaxIncome::with('country')
-            ->select(DB::raw('sum(taxed_amount) as total_tax, country_id'))
-            ->groupBy('country_id')
-            ->orderBy('total_tax', 'desc')
-            ->where('country_id', $country->id)
-            ->first();
 
-        $countryTaxByType = TaxIncome::with('country')
-            ->select(DB::raw('sum(taxed_amount) as total_tax, country_id, tax_category'))
-            ->groupBy('country_id')
-            ->groupBy('tax_category')
-            ->orderBy('total_tax', 'desc')
+        $countryTaxes = $taxIncome->summaryByCountry(true)
             ->where('country_id', $country->id)
             ->get();
+
+
+        $taxRate = new TaxRate;
 
         $overallTaxRate = $taxRate->formatTaxRate(
             $taxRate->getOverallAverageTaxRate('fixed', $country->id),
@@ -83,13 +79,9 @@ class HomeController extends Controller
             $country->currency_code
         );
 
-        $stateTaxes = TaxIncome::with('state')->with('country')
-            ->select(DB::raw('sum(taxed_amount) as total_tax, avg(taxed_amount) as average_tax, state_id, states.state_name, states.uuid, states.country_id'))
-            ->join('states', 'tax_incomes.state_id', '=', 'states.id')
-            ->groupBy('state_id')
-            ->groupBy('states.state_name')
-            ->groupBy('states.country_id')
-            ->groupBy('states.uuid');
+        $stateTaxes = $taxIncome->summaryByState()
+        ->addSelect('states.state_name', 'states.uuid')
+        ->join('states', 'tax_incomes.state_id', '=', 'states.id');
 
         if (!empty($request->sort)) {
             $sortDirection = !empty($request->sort_direction) && in_array($request->sort_direction, ['asc', 'desc']) ? $request->sort_direction : 'desc';
@@ -103,8 +95,7 @@ class HomeController extends Controller
             'countries'             => $countries,
             'currentCountry'        => $country,
             'empty_page'            => false,
-            'countryTax'            => $countryTax,
-            'countryTaxByType'      => $countryTaxByType,
+            'countryTaxes'          => $countryTaxes,
             'overallTaxRate'        => $overallTaxRate,
             'countryTaxRate'        => $countryTaxRate,
             'stateTaxRate'          => $stateTaxRate,
