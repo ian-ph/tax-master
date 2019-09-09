@@ -66,13 +66,14 @@ class CountyController extends Controller
      * @bodyParam country_code string The county's parent country iso 3 code. Example: USA
      * @bodyParam state_code string required The county's parent state iso code. Example: LASVEGAS
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "message" : "Request validation failed",
+     *     "errors": [
      *         {
      *             "county_name": [ "County name is required" ]
      *         }
@@ -139,13 +140,13 @@ class CountyController extends Controller
      * @bodyParam country_code string The county's parent country iso 3 code. Example: USA
      * @bodyParam state_code string required The county's parent state iso code. Example: LASVEGAS
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "country_name": [ "Country name is required" ]
      *         }
@@ -206,13 +207,13 @@ class CountyController extends Controller
      *
      * @bodyParam uuid string required The uuid of the county to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "County does not exists"
+     *     "errors" : "County does not exists",
      *     "message" : "Request validation failed"
      * }
      */
@@ -240,7 +241,7 @@ class CountyController extends Controller
      *
      * @bodyParam state_code string required The state code of the county's parent state. Example: LVND
      *
-     * @response 402 [
+     * @response [
      *     {
      *         "county_code": "NVD",
      *         "county_name": "Nevada"
@@ -249,7 +250,7 @@ class CountyController extends Controller
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "State does not exists"
+     *     "errors" : "State does not exists",
      *     "message" : "Request validation failed"
      * }
      */

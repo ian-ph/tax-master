@@ -64,13 +64,13 @@ class StateController extends Controller
      * @bodyParam state_code string The county's unique code. Example: LS
      * @bodyParam country_code string The county's parent country iso 3 code. Example: USA
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "state_name": [ "State name is required" ]
      *         }
@@ -125,13 +125,13 @@ class StateController extends Controller
      * @bodyParam state_code string The county's unique code. Example: LS
      * @bodyParam country_code string The county's parent country iso 3 code. Example: USA
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "state_name": [ "State name is required" ]
      *         }
@@ -180,13 +180,13 @@ class StateController extends Controller
      *
      * @bodyParam uuid string required The uuid of the state to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "State does not exists"
+     *     "errors" : "State does not exists",
      *     "message" : "Request validation failed"
      * }
      */
@@ -214,7 +214,7 @@ class StateController extends Controller
      *
      * @bodyParam country_code string required The country code of the county's parent country. Example: USD
      *
-     * @response 402 [
+     * @response [
      *     {
      *         "county_code": "LVN",
      *         "county_name": "Las Vegas"
@@ -223,7 +223,7 @@ class StateController extends Controller
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "Country does not exists"
+     *     "errors" : "Country does not exists",
      *     "message" : "Request validation failed"
      * }
      */
@@ -249,7 +249,7 @@ class StateController extends Controller
      *
      * @bodyParam country_uuid string required The country uuid of the county's parent country. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
      *
-     * @response 402 [
+     * @response [
      *     {
      *         "county_code": "LVN",
      *         "county_name": "Las Vegas"
@@ -258,7 +258,7 @@ class StateController extends Controller
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "Country does not exists"
+     *     "errors" : "Country does not exists",
      *     "message" : "Request validation failed"
      * }
      */

@@ -66,15 +66,15 @@ class CountryController extends Controller
      * @bodyParam currency_code string The country's iso 3 currency code. Example: USD
      * @bodyParam computation_type int required The type of tax computation the country is using. Example: 1
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
-     *             "country_name": [ "Country name is required" ]
+     *             "country_name": ["Country name is required"]
      *         }
      *     ]
      * }
@@ -119,13 +119,13 @@ class CountryController extends Controller
      * @bodyParam currency_code string The country's iso 3 currency code. Example: USD
      * @bodyParam computation_type int required The type of tax computation the country is using. Example: 1
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "country_name": [ "Country name is required" ]
      *         }
@@ -174,13 +174,13 @@ class CountryController extends Controller
      *
      * @bodyParam uuid string required The uuid of the country to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "Country does not exists"
+     *     "errors" : "Country does not exists",
      *     "message" : "Request validation failed"
      * }
      */

@@ -106,13 +106,13 @@ class TaxRateController extends Controller
      * @bodyParam tax_type int required The type of this tax, indicated 1 if single, 2 for joint.
      * @bodyParam note string required Descriptive note for this tax rate
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "country_code": [ "country code is required" ]
      *         }
@@ -179,13 +179,13 @@ class TaxRateController extends Controller
      * @bodyParam tax_type int required The type of this tax, indicated 1 if single, 2 for joint.
      * @bodyParam note string required Descriptive note for this tax rate
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "country_code": [ "country code is required" ]
      *         }
@@ -204,13 +204,13 @@ class TaxRateController extends Controller
      *
      * @bodyParam uuid string required The uuid of the tax_rate to be deleted. Example: 7b7009a8-cf1b-4466-84a1-8051b34a58b2
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" : "Tax rate does not exists"
+     *     "errors" : "Tax rate does not exists",
      *     "message" : "Request validation failed"
      * }
      */
@@ -228,13 +228,13 @@ class TaxRateController extends Controller
      * @bodyParam rate_percentage float The tax rate in percentage
      * @bodyParam rate_fixed float The tax rate in fixed amount
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "country_code": [ "country code is required" ]
      *         }
@@ -287,13 +287,13 @@ class TaxRateController extends Controller
      * @bodyParam bracket_minimum float The minimum bracket of the tax rate
      * @bodyParam bracket_maximum float The maximum bracket of the tax rate
      *
-     * @response 402 {
+     * @response {
      *     "success" : true
      * }
      *
      * @response 422 {
      *     "success" : false,
-     *     "errors" [
+     *     "errors": [
      *         {
      *             "country_code": [ "country code is required" ]
      *         }
