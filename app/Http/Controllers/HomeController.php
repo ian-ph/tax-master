@@ -118,36 +118,31 @@ class HomeController extends Controller
     public function states(Request $request, $uuid)
     {
         $state = State::with('country')->where('uuid', $uuid)->first();
+
         if (empty($state)) {
             abort('404');
         }
 
-        $stateTax = TaxIncome::with('country')
-            ->select(DB::raw('sum(taxed_amount) as total_tax, country_id'))
-            ->groupBy('country_id')
-            ->orderBy('total_tax', 'desc')
-            ->where('country_id', $state->country_id)
-            ->where('state_id', $state->id)
-            ->first();
-
-        $stateTaxByType = TaxIncome::with('country')
-            ->select(DB::raw('sum(taxed_amount) as total_tax, country_id, tax_category'))
-            ->groupBy('country_id')
-            ->groupBy('tax_category')
-            ->orderBy('total_tax', 'desc')
-            ->where('country_id', $state->country_id)
+        $stateTaxes = new TaxIncome;
+        $stateTaxes = $stateTaxes->summaryByState(true)
             ->where('state_id', $state->id)
             ->get();
 
-        $taxIncome = TaxIncome::with('country')
-            ->select(DB::raw('sum(taxed_amount) as total_tax, avg(taxed_amount) as average_tax, avg(tax_rates.rate_percentage) as average_tax_rate, counties.uuid, counties.county_name, counties.country_id'))
-            ->leftJoin('counties', 'tax_incomes.county_id', '=', 'counties.id')
-            ->leftJoin('tax_rates', 'tax_rates.county_id', '=', 'counties.id')
-            ->where('counties.country_id', $state->country_id)
-            ->where('counties.state_id', $state->id)
-            ->groupBy('counties.county_name')
-            ->groupBy('counties.uuid')
-            ->groupBy('counties.country_id');
+        $taxIncome = new TaxIncome;
+        $taxIncome = $taxIncome->summaryByCounty()
+            ->where('tax_incomes.state_id', $state->id)
+            ->addSelect(DB::raw('counties.county_name, counties.uuid, avg(tax_rates.rate_percentage) as average_tax_rate'))
+            ->join('counties', 'tax_incomes.county_id', '=', 'counties.id')
+            ->join('tax_rates', 'tax_incomes.county_id', '=', 'tax_rates.county_id');
+
+        if (!empty($request->sort)) {
+            $sortDirection = !empty($request->sort_direction) && in_array($request->sort_direction, ['asc', 'desc']) ? $request->sort_direction : 'desc';
+            $taxIncome->orderBy($request->sort, $sortDirection);
+        } else {
+            $taxIncome->orderBy('total_tax', 'desc');
+        }
+
+        $taxIncome = $taxIncome->get();
 
         $taxRate = new TaxRate;
         $stateTaxRate = $taxRate->formatTaxRate(
@@ -167,24 +162,13 @@ class HomeController extends Controller
             $state->country->currency_code
         );
 
-        if (!empty($request->sort)) {
-            $sortDirection = !empty($request->sort_direction) && in_array($request->sort_direction, ['asc', 'desc']) ? $request->sort_direction : 'desc';
-            $taxIncome->orderBy($request->sort, $sortDirection);
-        } else {
-            $taxIncome->orderBy('total_tax', 'desc');
-        }
-        $taxIncome = $taxIncome->get();
-
-
-
         return view('home.states', [
-            'stateTax' => $stateTax,
-            'stateTaxRate'          => $stateTaxRate,
-            'countyTaxRate'         => $countyTaxRate,
-            'overallAverage'        => $overallAverage,
-            'stateTaxByType' => $stateTaxByType,
-            'state' => $state,
-            'taxIncome' => $taxIncome
+            'state'             => $state,
+            'stateTaxes'        => $stateTaxes,
+            'taxIncome'         => $taxIncome,
+            'stateTaxRate'      => $stateTaxRate,
+            'countyTaxRate'     => $countyTaxRate,
+            'overallAverage'    => $overallAverage,
         ]);
     }
 }
