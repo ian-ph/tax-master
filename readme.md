@@ -1,72 +1,37 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+# Tax Master
 
-## About Laravel
+Tax Master is a simple app that displays the tax income and tax rate statistics of a given country, state and county combination. This app is built as a form of test.
+Note that the app is inconviniently structured in order to showcase different areas of skill. 
+- Statistic related pages (dashboard and states statistic pages) are made using the conventional MVC structure.
+- Statistic related pages also demostrate knowledge in sql, eloquent (ORM in general) and common query optimization. You can seed the database with 1,000,000 records and get "real time" data in  2 seconds
+- CRUDs (for countries, states, counties, tax rates) demonstrate knowlede in API design and development, API documentation structure, common validation and resource handling, and backend/frontend script interaction.
+- CRUDs also demonstrate knowledge in javascript where the front end interaction is mostly ajax based. (though only made with Jquery)
+- Unit testing focuses on the API as all computations are database level (mysql avg for instance)
+- Unit testing also demostrate knowledge in factories, in memory data testing, and mocking.
+- Database are designed using migration files. Seeder files are also provided for convinience.
+- API endpoints are properly commented where the documentation can be generated automatically. You can find the docs at /docs/index.html.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Making the App run
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### Requirements
+- Basic knowledge on how httpd/apache work
+- Composer is installed
+- LAMP is installed
+- Php is at least version 7.x 
+- create an empty database
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### To run the app on your chosen machine, simply follow the steps below
+- clone the repository
+- go to the the directory and run ```composer install```
+- copy the ```.env-example``` file as ```.env```. Modify the ```.env``` file, put the database sever, user and password there
+- run ```php artisan key:generate```
+- run ```php artisan migrate``` to create the tables
+- run ```php artisan db:seed``` to seed the database
+-- feel free to modify ```database/seeds/TaxIncomeSeeder.php``` ```$limit``` property  to indicate the number of records to insert.
+-- run the tax income seeder as much as needed to add more records by running ```php artisan db:seed --class=TaxIncomeSeeder```
+- Finally, run ```php artisan serve``` and open the app on your chosen browser
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1400 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Unit Testing
+- go to the app directory
+- run ```vendor/bin/phpunit```
