@@ -35,13 +35,13 @@ class CountryApiTest extends TestCase
     }
 
 
-    public function test_create()
+    public function testCreate()
     {
         $this->signIn(null, 'api');
         $this->create();
     }
 
-    public function test_update()
+    public function testUpdate()
     {
         $this->signIn(null, 'api');
         $this->update([
@@ -49,7 +49,7 @@ class CountryApiTest extends TestCase
         ]);
     }
 
-    public function test_delete()
+    public function testDelete()
     {
         $this->signIn(null, 'api');
         $this->destroy();

@@ -16,7 +16,7 @@ $factory->define(County::class, function (Faker $faker) {
         'uuid' => $faker->uuid,
         'county_name' => $faker->city,
         'county_code' => Str::random(6),
-        'country_code' =>  $country->id,
-        'state_code'  => $state->id
+        'country_id' =>  $country->id,
+        'state_id'  => $state->id
     ];
 });

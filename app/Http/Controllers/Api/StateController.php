@@ -81,7 +81,7 @@ class StateController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'state_name'    => 'required|max:255',
-            'state_code'    => 'required|min:2|max:5|unique:states',
+            'state_code'    => 'required|min:2|max:8|unique:states',
             'country_code'  => 'required',
         ]);
 
@@ -106,7 +106,7 @@ class StateController extends Controller
         $state->state_name = $request->state_name;
         $state->state_code = strtoupper($request->state_code);
         $state->country_id = $country->id;
-        $state->uuid = Str::uuid();
+        $state->uuid = !empty($request->uuid) ? $request->uuid : Str::uuid();
         $state->save();
 
         return [
@@ -140,9 +140,18 @@ class StateController extends Controller
      */
     public function update(Request $request, $uuid)
     {
+        $state = State::where('uuid', $uuid)->first();
+        if (empty($state)) {
+            return response()->json([
+                'message' => 'Request validation failed',
+                'errors' => 'State does not exists.',
+                'success' => false
+            ], 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'state_name'    => 'required|max:255',
-            'state_code'    => 'required|min:2|max:5',
+            'state_code'    => 'required|min:2|max:8|unique:states,state_code,' . $state->id,
             'country_code'  => 'required',
         ]);
 
@@ -162,7 +171,7 @@ class StateController extends Controller
                 'success' => false
             ], 422);
         }
-        $state = State::where('uuid', $uuid)->first();
+
         $state->state_name = $request->state_name;
         $state->state_code = strtoupper($request->state_code);
         $state->country_id = $country->id;

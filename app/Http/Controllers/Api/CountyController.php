@@ -84,7 +84,7 @@ class CountyController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'county_name'   => 'required|max:255',
-            'county_code'   => 'required|min:2|max:5|unique:counties',
+            'county_code'   => 'required|min:2|max:8|unique:counties',
             'country_code'  => 'required',
             'state_code'    => 'required',
         ]);
@@ -117,10 +117,10 @@ class CountyController extends Controller
 
         $county = new County;
         $county->county_name    = $request->county_name;
-        $county->county_code    = strtoupper($request->county_code);
+        $county->county_code    = $request->county_code;
         $county->country_id     = $country->id;
         $county->state_id       = $state->id;
-        $county->uuid           = Str::uuid();
+        $county->uuid           = !empty($request->uuid) ? $request->uuid : Str::uuid();
         $county->save();
 
         return [
@@ -155,9 +155,19 @@ class CountyController extends Controller
      */
     public function update(Request $request, $uuid)
     {
+        $county = County::where('uuid', $uuid)->first();
+
+        if (empty($county)) {
+            return response()->json([
+                'message' => 'Request validation failed',
+                'errors' => 'This county does not exist.',
+                'success' => false
+            ], 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'county_name'    => 'required|max:255',
-            'county_code'    => 'required|min:2|max:5',
+            'county_code'    => 'required|min:2|max:8|unique:counties,county_code,' . $county->id,
             'country_code'  => 'required',
             'state_code'    => 'required',
         ]);
@@ -188,9 +198,8 @@ class CountyController extends Controller
             ], 422);
         }
 
-        $county = County::where('uuid', $uuid)->first();
         $county->county_name    = $request->county_name;
-        $county->county_code    = strtoupper($request->county_code);
+        $county->county_code    = $request->county_code;
         $county->country_id     = $country->id;
         $county->state_id       = $state->id;
         $county->save();

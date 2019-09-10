@@ -1,7 +1,9 @@
 <?php
 namespace Tests;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
@@ -28,12 +30,17 @@ abstract class TestCase extends BaseTestCase
         $route = $this->base_route ? "{$this->base_route}.store" : $route;
         $model = $this->base_model ?? $model;
         $attributes = raw($model, $attributes);
+
         if (! auth()->user()) {
             $this->expectException(\Illuminate\Auth\AuthenticationException::class);
         }
-
         $response = $this->postJson(route($route), $attributes)->assertSuccessful();
         $model = new $model;
+
+        unset($attributes['country_code']);
+        unset($attributes['state_code']);
+        unset($attributes['county_code']);
+
         $this->assertDatabaseHas($model->getTable(), $attributes);
         return $response;
     }
@@ -46,9 +53,9 @@ abstract class TestCase extends BaseTestCase
         if (! auth()->user()) {
             $this->expectException(\Illuminate\Auth\AuthenticationException::class);
         }
-        $response = $this->patchJson(route($route, $model->id), $model->toArray());
+        $response = $this->patchJson(route($route, $model->uuid), $model->toArray());
         tap($model->fresh(), function ($model) use ($attributes) {
-            collect($attributes)->each(function($value, $key) use ($model) {
+            collect($attributes)->each(function ($value, $key) use ($model) {
                 $this->assertEquals($value, $model[$key]);
             });
         });
@@ -67,7 +74,7 @@ abstract class TestCase extends BaseTestCase
         $this->assertDatabaseMissing($model->getTable(), $model->toArray());
         return $response;
     }
-    public function multipleDelete ($model = '', $route = '')
+    public function multipleDelete($model = '', $route = '')
     {
         $this->withoutExceptionHandling();
         $route = $this->base_route ? "{$this->base_route}.destroyAll" : $route;

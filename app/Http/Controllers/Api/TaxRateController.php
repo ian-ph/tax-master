@@ -131,6 +131,7 @@ class TaxRateController extends Controller
             'bracket_minimum'       => 'numeric',
             'bracket_maximum'       => 'nullable|numeric|gt:bracket_minimum',
             'tax_type'              => 'required|in:1,2',
+            'tax_category'          => 'required|in:1,2',
             'note'                  => 'required'
         ]);
 
@@ -143,11 +144,11 @@ class TaxRateController extends Controller
         }
 
         $country    = Country::where('country_code', $request->country_code)->first()->id;
-        $state      = !empty($request->state_code) ? State::where('country_code', $request->state_code)->first()->id : null;
-        $county     = !empty($request->county_code) ? County::where('country_code', $request->county_code)->first()->id : null;
+        $state      = !empty($request->state_code) ? State::where('state_code', $request->state_code)->first()->id : null;
+        $county     = !empty($request->county_code) ? County::where('county_code', $request->county_code)->first()->id : null;
 
         $taxRate                        = new TaxRate;
-        $taxRate->uuid                  = Str::uuid();
+        $taxRate->uuid                  = !empty($request->uuid) ? $request->uuid : Str::uuid();
         $taxRate->country_id            = $country;
         $taxRate->state_id              = $state;
         $taxRate->county_id             = $county;
@@ -155,6 +156,7 @@ class TaxRateController extends Controller
         $taxRate->rate_fixed            = $request->rate_fixed;
         $taxRate->rate_percentage       = $request->rate_percentage;
         $taxRate->tax_type              = $request->tax_type;
+        $taxRate->tax_category          = $request->tax_category;
         $taxRate->bracket_minimum       = $request->bracket_minimum;
         $taxRate->bracket_maximum       = $request->bracket_maximum;
         $taxRate->note                  = $request->note;
@@ -192,9 +194,56 @@ class TaxRateController extends Controller
      *     ]
      * }
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $uuid)
     {
-        //
+        $tax_rate = TaxRate::where('uuid', $uuid)->first();
+        if (empty($tax_rate)) {
+            return response()->json([
+                'message' => 'Request validation failed',
+                'errors' => 'Tax Rate does not exists',
+                'success' => false
+            ], 422);
+        }
+
+
+        $validator = Validator::make($request->all(), [
+            'country_code'          => 'required|exists:countries,country_code',
+            'state_code'            => 'nullable|exists:states,state_code',
+            'county_code'           => 'nullable|exists:county,county_code',
+            'implementation_date'   => 'required|date',
+            'rate_percentage'       => 'required|numeric|max:99.99',
+            'rate_fixed'            => 'required|numeric',
+            'bracket_minimum'       => 'numeric',
+            'bracket_maximum'       => 'nullable|numeric|gt:bracket_minimum',
+            'tax_type'              => 'required|in:1,2',
+            'tax_category'          => 'required|in:1,2',
+            'note'                  => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Request validation failed',
+                'errors' => $validator->messages(),
+                'success' => false
+            ], 422);
+        }
+
+        $country    = Country::where('country_code', $request->country_code)->first()->id;
+        $state      = !empty($request->state_code) ? State::where('state_code', $request->state_code)->first()->id : null;
+        $county     = !empty($request->county_code) ? County::where('county_code', $request->county_code)->first()->id : null;
+
+        $taxRate->country_id            = $country;
+        $taxRate->state_id              = $state;
+        $taxRate->county_id             = $county;
+        $taxRate->implementation_date   = $request->implementation_date;
+        $taxRate->rate_fixed            = $request->rate_fixed;
+        $taxRate->rate_percentage       = $request->rate_percentage;
+        $taxRate->tax_type              = $request->tax_type;
+        $taxRate->tax_category          = $request->tax_category;
+        $taxRate->bracket_minimum       = $request->bracket_minimum;
+        $taxRate->bracket_maximum       = $request->bracket_maximum;
+        $taxRate->note                  = $request->note;
+        $taxRate->save();
     }
 
     /**
@@ -214,9 +263,21 @@ class TaxRateController extends Controller
      *     "message" : "Request validation failed"
      * }
      */
-    public function destroy($id)
+    public function destroy($uuid)
     {
-        //
+        $taxRate = TaxRate::where('uuid', $uuid)->first();
+        if (empty($taxRate)) {
+            return response()->json([
+                'message' => 'Request validation failed',
+                'errors' => 'Tax Rate does not exists.',
+                'success' => false
+            ], 422);
+        }
+
+        $taxRate->delete();
+        return [
+            'success' => true
+        ];
     }
 
     /**

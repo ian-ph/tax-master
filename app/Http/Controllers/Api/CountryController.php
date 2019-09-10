@@ -137,9 +137,18 @@ class CountryController extends Controller
      */
     public function update(Request $request, $uuid)
     {
+        $country = Country::where('uuid', $uuid)->first();
+        if (empty($country)) {
+            return response()->json([
+                'message'   => 'Request validation failed',
+                'errors'    => 'Country does not exists.',
+                'success'   => false
+            ], 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'country_name'      => 'required|max:255',
-            'country_code'      => 'required|min:3|max:3',
+            'country_code'      => 'required|min:3|max:3|unique:countries,country_code,' . $country->id,
             'currency_code'     => 'required|min:3|max:3',
             'computation_type'  => 'required|in:1,2'
         ]);
@@ -152,16 +161,11 @@ class CountryController extends Controller
             ], 422);
         }
 
-        $country = Country::where('uuid', $uuid)->first();
-        if (empty($country)) {
-            return response()->json([
-                'message'   => 'Request validation failed',
-                'errors'    => 'Country does not exists.',
-                'success'   => false
-            ], 422);
-        }
+
         $country->country_name = $request->country_name;
         $country->country_code = strtoupper($request->country_code);
+        $country->currency_code     =  $request->currency_code;
+        $country->computation_type  = $request->computation_type;
         $country->save();
 
         return [
