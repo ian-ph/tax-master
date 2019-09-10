@@ -90,16 +90,18 @@ class CountryController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Request validation failed',
-                'errors' => $validator->messages(),
-                'success' => false
+                'message'   => 'Request validation failed',
+                'errors'    => $validator->messages(),
+                'success'   => false
             ], 422);
         }
 
         $country = new Country;
-        $country->country_name = $request->country_name;
-        $country->country_code = strtoupper($request->country_code);
-        $country->uuid = Str::uuid();
+        $country->country_name      = $request->country_name;
+        $country->country_code      = strtoupper($request->country_code);
+        $country->currency_code     =  $request->currency_code;
+        $country->computation_type  = $request->computation_type;
+        $country->uuid              = !empty($request->uuid) ? $request->uuid : Str::uuid();
         $country->save();
 
         return [
@@ -144,18 +146,18 @@ class CountryController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Request validation failed',
-                'errors' => $validator->messages(),
-                'success' => false
+                'message'   => 'Request validation failed',
+                'errors'    => $validator->messages(),
+                'success'   => false
             ], 422);
         }
 
         $country = Country::where('uuid', $uuid)->first();
         if (empty($country)) {
             return response()->json([
-                'message' => 'Request validation failed',
-                'errors' => 'Country does not exists.',
-                'success' => false
+                'message'   => 'Request validation failed',
+                'errors'    => 'Country does not exists.',
+                'success'   => false
             ], 422);
         }
         $country->country_name = $request->country_name;
@@ -189,9 +191,9 @@ class CountryController extends Controller
         $country = Country::where('uuid', $uuid)->first();
         if (empty($country)) {
             return response()->json([
-                'message' => 'Request validation failed',
-                'errors' => 'Country does not exists.',
-                'success' => false
+                'message'   => 'Request validation failed',
+                'errors'    => 'Country does not exists.',
+                'success'   => false
             ], 422);
         }
 

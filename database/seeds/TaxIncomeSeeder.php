@@ -15,7 +15,7 @@ class TaxIncomeSeeder extends Seeder
      */
     public function run()
     {
-        $limit = 400000;
+        $limit = 5000;
 
         $country = Country::where('country_code', 'USA')->first();
         $states = State::where('country_id', $country->id)->get();
