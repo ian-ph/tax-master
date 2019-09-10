@@ -55,7 +55,7 @@
             <p>There's nothing to display.</p>
             <p>Begin by <a href="#">creating</a> a new record.</p>
         </div>
-        <div class="table-data d-none" data-edit_route="{{ route('state.edit', '') }}" data-delete_route="{{ route('state.delete', '') }}">
+        <div class="table-data d-none" data-edit_route="{{ route('rates.edit', '') }}" data-delete_route="{{ route('rates.delete', '') }}">
 
         </div>
     </div>

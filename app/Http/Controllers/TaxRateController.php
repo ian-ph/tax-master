@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\County;
 use App\Country;
 use App\State;
+use App\TaxRate;
+
 class TaxRateController extends Controller
 {
     /**
@@ -40,15 +43,21 @@ class TaxRateController extends Controller
      */
     public function edit($uuid)
     {
-        $state = State::where('uuid', $uuid)->with('country')->first();
-        $countries = Country::all();
-        if (empty($state)) {
+
+        $taxRate = TaxRate::where('uuid', $uuid)->first();
+        if (empty($taxRate)) {
             abort(404);
         }
 
+        $countries  = Country::all();
+        $states     = !empty($taxRate->country_id) ? State::where('country_id', $taxRate->country_id)->orderBy('state_name')->get() : [];
+        $counties   = !empty($taxRate->state_id) ? County::where('state_id', $taxRate->state_id)->orderBy('county_name')->get() : [];
+
         return view('rates.edit', [
-            'state' => $state,
-            'countries' => $countries
+            'taxRate' => $taxRate,
+            'countries' => $countries,
+            'states' => $states,
+            'counties' => $counties
         ]);
     }
 
@@ -61,12 +70,12 @@ class TaxRateController extends Controller
      */
     public function delete($uuid)
     {
-        $state = State::where('uuid', $uuid)->first();
-        if (empty($state)) {
+        $taxRate = TaxRate::where('uuid', $uuid)->first();
+        if (empty($taxRate)) {
             abort(404);
         }
         return view('rates.delete', [
-            'state' => $state
+            'tax_rate' => $taxRate
         ]);
     }
 }

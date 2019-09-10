@@ -66,6 +66,13 @@
                                 <option value="2">Compute based on the total tax from income</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="tax_category">Tax Cagtegory</label>
+                            <select name="tax_category" id="" class="form-control">
+                                <option value="1">Single filer</option>
+                                <option value="2">Married filing jointly</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="tax-bracket-form">
